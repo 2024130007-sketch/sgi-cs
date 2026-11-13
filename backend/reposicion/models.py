@@ -3,6 +3,7 @@ from almacenes.models import Almacen
 from inventario.models import Lote
 from productos.models import Producto
 
+
 class ReglaReposicion(models.Model):
     """RF-40: punto de reorden = demanda diaria x tiempo de entrega + stock de seguridad."""
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)

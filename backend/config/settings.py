@@ -15,12 +15,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "usuarios",
+    "productos",
+    "almacenes",
+    "proveedores",
+    "inventario",
+    "transferencias",
+    "reposicion",
 ]
-
-# Apps del proyecto: se activan solo si su carpeta ya existe
-APPS_DEL_PROYECTO = ["usuarios", "productos", "almacenes", "proveedores",
-    "inventario", "transferencias", "reposicion"]
-INSTALLED_APPS += [a for a in APPS_DEL_PROYECTO if (BASE_DIR / a / "__init__.py").exists()]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
