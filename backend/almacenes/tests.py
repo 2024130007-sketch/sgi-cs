@@ -5,7 +5,7 @@ from usuarios.models import Usuario
 
 class AlmacenTests(APITestCase): 
     def setUp(self): 
-        self.client.force_authenticate(Usuario.objects.create_user("a@t.pe", "Clave1234!", rol="ADMINISTRADOR")) 
+        self.client.force_authenticate(Usuario.objects.create_user("a@t.pe", "a@t.pe", "Clave1234!", rol="ADMINISTRADOR")) 
  
     def test_crud_basico(self): 
         r = self.client.post("/api/almacenes/", {"nombre": "Central", "direccion": "Jr. 1"}, format="json") 
@@ -24,6 +24,6 @@ class AlmacenTests(APITestCase):
         self.assertEqual(r.status_code, 400) 
  
     def test_operario_no_escribe(self): 
-        self.client.force_authenticate(Usuario.objects.create_user("o@t.pe", "Clave1234!", rol="OPERARIO")) 
+        self.client.force_authenticate(Usuario.objects.create_user("o@t.pe", "o@t.pe", "Clave1234!", rol="OPERARIO")) 
         r = self.client.post("/api/almacenes/", {"nombre": "X", "direccion": "Y"}, format="json") 
         self.assertEqual(r.status_code, 403)
