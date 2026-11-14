@@ -11,10 +11,21 @@ Proyecto grupal de Ingeniería de Software - Universidad de Huánuco - Grupo 3 -
 | Frontend | Angular 19 (componentes standalone) |
 | Base de datos | SQLite (desarrollo) |
 
-## Módulos funcionales del Hito 2
+## Módulos del Hito 2
+Módulos funcionales a nivel básico (con validaciones, pruebas automáticas y pantalla en el menú):
+
 1. **Seguridad y datos maestros:** inicio de sesión, usuarios y roles, productos con códigos de barras, almacenes y proveedores.
 2. **Movimientos de inventario y stock:** ingreso con lote y vencimiento, salida con FEFO, consulta de stock y kardex.
-Además, en proceso: transferencias entre almacenes y reglas de reposición con alertas.
+
+Avance adicional ya integrado: transferencias entre almacenes y reglas de reposición con alertas.
+
+| Módulo | Responsable |
+|---|---|
+| Base del proyecto, menú, rutas, reposición y alertas | Patrick Carnero |
+| Login, usuarios y productos | Linda Herrera |
+| Almacenes y transferencias | Ashly Zuñiga |
+| Proveedores y kardex | Adrian Carlos |
+| Ingreso, salida FEFO y stock | Dresly Pineda |
 
 ## Cómo ejecutar
 
@@ -27,9 +38,36 @@ Además, en proceso: transferencias entre almacenes y reglas de reposición con 
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate # en Linux/Mac: source .venv/bin/activate
+.venv\Scripts\activate        # en Linux/Mac: source .venv/bin/activate
 pip install -r requirements.txt
-python manage.py makemigrations
 python manage.py migrate
-python manage.py cargar_datos_prueba
+python manage.py cargar_usuarios_prueba
+python manage.py cargar_productos_prueba
 python manage.py runserver
+```
+La API queda en `http://localhost:8000/api`.
+
+### 2. Frontend (Angular)
+En otra terminal:
+```bash
+cd frontend
+npm install
+npm start
+```
+La aplicación queda en `http://localhost:4200`.
+
+### Usuarios de prueba
+| Correo | Contraseña | Rol |
+|---|---|---|
+| admin@sgi.com | Admin12345 | Administrador |
+| jefe@sgi.com | Jefe12345 | Jefe de almacén |
+| operario@sgi.com | Operario123 | Operario |
+| comprador@sgi.com | Comprador123 | Comprador |
+
+Son credenciales solo para pruebas.
+
+### Pruebas automáticas
+```bash
+cd backend
+python manage.py test
+```
