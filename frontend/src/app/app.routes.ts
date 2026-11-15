@@ -23,6 +23,14 @@ export const routes: Routes = [
       { path: 'reglas', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] }, loadComponent: () => import('./features/reposicion/reglas.component').then((m) => m.ReglasComponent) },
       { path: 'alertas', loadComponent: () => import('./features/reposicion/alertas.component').then((m) => m.AlertasComponent) },
       { path: 'usuarios', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/usuarios/usuarios.component').then((m) => m.UsuariosComponent) },
+      { path: 'ajustes', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] }, loadComponent: () => import('./features/ajustes/ajuste.component').then((m) => m.AjusteComponent) },
+      { path: 'bajas', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] }, loadComponent: () => import('./features/ajustes/baja.component').then((m) => m.BajaComponent) },
+      { path: 'trazabilidad', loadComponent: () => import('./features/inventario/trazabilidad.component').then((m) => m.TrazabilidadComponent) },
+      { path: 'ordenes-compra', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] }, loadComponent: () => import('./features/compras/ordenes.component').then((m) => m.OrdenesComponent) },
+      { path: 'aprobacion-ordenes', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] }, loadComponent: () => import('./features/compras/aprobacion.component').then((m) => m.AprobacionComponent) },
+      { path: 'recepcion', canActivate: [rolGuard], data: { roles: MOVER }, loadComponent: () => import('./features/recepciones/recepcion.component').then((m) => m.RecepcionComponent) },
+      { path: 'envios', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] }, loadComponent: () => import('./features/notificaciones/envios.component').then((m) => m.EnviosComponent) },
+      { path: 'bitacora', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/auditoria/bitacora.component').then((m) => m.BitacoraComponent) },
       { path: '**', redirectTo: '' },
     ]
   }
