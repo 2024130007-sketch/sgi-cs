@@ -22,6 +22,11 @@ INSTALLED_APPS = [
     "inventario",
     "transferencias",
     "reposicion",
+    "ajustes",
+    "compras",
+    "recepciones",
+    "auditoria",
+    "notificaciones",
 ]
 
 MIDDLEWARE = [
@@ -73,3 +78,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(hours=8),
 }
+# Correo (Hito 3): en desarrollo los mensajes se imprimen en la consola del servidor.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "sgi-cs@localhost"
