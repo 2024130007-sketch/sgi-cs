@@ -63,3 +63,23 @@ class ExistenciaSerializer(serializers.ModelSerializer):
         fields = ["id", "producto_id", "sku", "producto", "categoria", "almacen", "almacen_nombre",
                   "lote_numero", "vencimiento", "estado_lote", "cantidad", "reservada",
                   "en_transito", "disponible"]
+
+
+class LoteSerializer(serializers.ModelSerializer):
+    producto_id = serializers.IntegerField(read_only=True)
+    sku = serializers.CharField(source="producto.sku", read_only=True)
+    producto = serializers.CharField(source="producto.nombre", read_only=True)
+    proveedor_nombre = serializers.CharField(source="proveedor.razon_social", read_only=True, default="")
+    estado_display = serializers.CharField(source="get_estado_display", read_only=True)
+    stock_total = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Lote
+        fields = ["id", "producto_id", "sku", "producto", "numero", "proveedor_nombre",
+                  "fecha_fabricacion", "fecha_vencimiento", "estado", "estado_display",
+                  "motivo_estado", "stock_total"]
+
+
+class EstadoLoteSerializer(serializers.Serializer):
+    estado = serializers.ChoiceField(choices=Lote.Estado.choices)
+    motivo = serializers.CharField(required=False, allow_blank=True, default="")
