@@ -126,3 +126,35 @@ def registrar_salida(usuario, almacen, producto, cantidad, documento=""):
     evaluar_reposicion(producto, almacen)
     return mov
 
+
+def cambiar_estado_lote(lote, estado, motivo=""):
+    """RF-34: pone un lote en cuarentena o lo libera. La cuarentena exige motivo."""
+    if estado not in Lote.Estado.values:
+        raise ValidationError("Estado de lote no válido.")
+    motivo = (motivo or "").strip()
+    if estado == Lote.Estado.CUARENTENA and not motivo:
+        raise ValidationError("Indique el motivo de la cuarentena.")
+    if lote.estado == estado:
+        raise ValidationError(f"El lote ya está en estado {lote.get_estado_display().lower()}.")
+    lote.estado = estado
+    lote.motivo_estado = motivo if estado == Lote.Estado.CUARENTENA else ""
+    lote.save(update_fields=["estado", "motivo_estado"])
+    return lote
+
+
+def trazabilidad_lote(lote):
+    """RF-33: dónde está el lote hoy y todos los movimientos que lo tocaron."""
+    existencias = [
+        {"almacen": e.almacen.nombre, "cantidad": e.cantidad, "reservada": e.reservada,
+         "disponible": e.disponible}
+        for e in lote.existencias.select_related("almacen").order_by("almacen__nombre")]
+    detalles = (DetalleMovimiento.objects.filter(lote=lote)
+                .select_related("movimiento__almacen", "movimiento__usuario")
+                .order_by("movimiento__fecha", "id"))
+    movimientos = [
+        {"fecha": d.movimiento.fecha, "tipo": d.movimiento.tipo,
+         "tipo_display": d.movimiento.get_tipo_display(), "almacen": d.movimiento.almacen.nombre,
+         "usuario": d.movimiento.usuario.email, "cantidad": d.cantidad,
+         "documento": d.movimiento.documento_origen}
+        for d in detalles]
+    return {"existencias": existencias, "movimientos": movimientos}

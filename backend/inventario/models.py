@@ -19,6 +19,7 @@ class Lote(models.Model):
     fecha_fabricacion = models.DateField(null=True, blank=True)
     fecha_vencimiento = models.DateField(null=True, blank=True)
     estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.ACTIVO)
+    motivo_estado = models.CharField(max_length=200, blank=True)  # RF-34: motivo de la cuarentena
 
     class Meta:
         unique_together = [("producto", "numero")]
