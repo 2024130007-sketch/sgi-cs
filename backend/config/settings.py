@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "inventario",
     "transferencias",
     "reposicion",
+    "auditoria",
 ]
 
 MIDDLEWARE = [
