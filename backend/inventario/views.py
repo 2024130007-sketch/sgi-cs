@@ -1,3 +1,6 @@
+from django.db.models import Q, Sum
+from django.db.models.functions import Coalesce
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -5,12 +8,13 @@ from rest_framework.views import APIView
 from config.permisos import roles_permitidos
 from usuarios.models import Usuario
 from . import services
-from .models import Existencia, Movimiento
-from .serializers import (ExistenciaSerializer, IngresoSerializer, MovimientoSerializer,
-                          SalidaSerializer)
+from .models import Existencia, Lote, Movimiento
+from .serializers import (EstadoLoteSerializer, ExistenciaSerializer, IngresoSerializer,
+                          LoteSerializer, MovimientoSerializer, SalidaSerializer)
 
 R = Usuario.Rol
 PuedeMover = roles_permitidos(R.ADMINISTRADOR, R.JEFE_ALMACEN, R.OPERARIO)
+PuedeGestionarLotes = roles_permitidos(R.ADMINISTRADOR, R.JEFE_ALMACEN)
 
 
 class IngresoView(APIView):
@@ -66,3 +70,46 @@ class MovimientoListView(generics.ListAPIView):
     serializer_class = MovimientoSerializer
     queryset = Movimiento.objects.select_related("almacen", "usuario").prefetch_related(
         "detalles__lote__producto")[:200]
+
+
+def _lotes_con_stock():
+    return (Lote.objects.select_related("producto", "proveedor")
+            .annotate(stock_total=Coalesce(Sum("existencias__cantidad"), 0)))
+
+
+class LoteListView(generics.ListAPIView):
+    """GET /api/inventario/lotes/?estado=&producto=&search= (CU-09)."""
+    serializer_class = LoteSerializer
+
+    def get_queryset(self):
+        qs = _lotes_con_stock().order_by("producto__nombre", "fecha_vencimiento")
+        p = self.request.query_params
+        if p.get("estado"):
+            qs = qs.filter(estado=p["estado"])
+        if p.get("producto"):
+            qs = qs.filter(producto_id=p["producto"])
+        if p.get("search"):
+            q = p["search"]
+            qs = qs.filter(Q(numero__icontains=q) | Q(producto__nombre__icontains=q)
+                           | Q(producto__sku__icontains=q))
+        return qs
+
+
+class LoteTrazabilidadView(APIView):
+    """GET /api/inventario/lotes/<id>/trazabilidad/ (RF-33)."""
+
+    def get(self, request, pk):
+        lote = get_object_or_404(_lotes_con_stock(), pk=pk)
+        return Response({"lote": LoteSerializer(lote).data, **services.trazabilidad_lote(lote)})
+
+
+class LoteEstadoView(APIView):
+    """POST /api/inventario/lotes/<id>/estado/ (RF-34): cuarentena o liberación."""
+    permission_classes = [PuedeGestionarLotes]
+
+    def post(self, request, pk):
+        lote = get_object_or_404(Lote, pk=pk)
+        s = EstadoLoteSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        services.cambiar_estado_lote(lote, s.validated_data["estado"], s.validated_data["motivo"])
+        return Response(LoteSerializer(_lotes_con_stock().get(pk=pk)).data)
