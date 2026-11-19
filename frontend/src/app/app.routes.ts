@@ -23,6 +23,7 @@ export const routes: Routes = [
       { path: 'reglas', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] }, loadComponent: () => import('./features/reposicion/reglas.component').then((m) => m.ReglasComponent) },
       { path: 'alertas', loadComponent: () => import('./features/reposicion/alertas.component').then((m) => m.AlertasComponent) },
       { path: 'usuarios', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/usuarios/usuarios.component').then((m) => m.UsuariosComponent) },
+      { path: 'auditoria', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/auditoria/auditoria.component').then((m) => m.AuditoriaComponent) },
       { path: '**', redirectTo: '' },
     ]
   }
