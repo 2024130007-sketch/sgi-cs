@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-#from compras.models import DetalleOrdenCompra, OrdenCompra
+from compras.models import DetalleOrdenCompra, OrdenCompra
 from inventario.models import Lote
 
 class Recepcion(models.Model):
