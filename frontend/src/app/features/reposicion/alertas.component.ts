@@ -21,6 +21,7 @@ import { ApiService, mensajeError } from '../../core/api.service';
         </select>
       </label>
       <button (click)="generar()">Verificar alertas ahora</button>
+      <button (click)="enviarResumen()">Enviar resumen por correo</button>
     </div>
 
     <table>
@@ -68,6 +69,18 @@ export class AlertasComponent implements OnInit {
     this.api.post<any>('alertas/generar').subscribe({
       next: (r) => { this.ok = `Verificación terminada: ${r.nuevas} alerta(s) nueva(s).`; this.cargar(); },
       error: (e) => { this.error = mensajeError(e); },
+    });
+  }
+
+    enviarResumen() {
+    this.error = this.ok = '';
+    this.api.post<any>('alertas/enviar_resumen').subscribe({
+      next: (r) => {
+        this.ok = `Resumen procesado: ${r.enviados} correo(s) enviado(s) con ${r.alertas} alerta(s).`;
+      },
+      error: (e) => {
+        this.error = mensajeError(e);
+      },
     });
   }
 
