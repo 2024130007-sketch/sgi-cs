@@ -33,3 +33,19 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py cargar_datos_prueba
 python manage.py runserver
+
+## Hito 3 - Nuevos Módulos (Noviembre 2026)
+
+En este hito se implementaron las siguientes funcionalidades clave para el sistema:
+
+### Módulo de Recepción de Órdenes de Compra (Patrick Carnero Lino)
+*   **Modelos:** Se crearon las tablas `Recepcion` y `DetalleRecepcion` para registrar la llegada de mercadería.
+*   **Lógica de Negocio:** El servicio `registrar_recepcion` permite recibir órdenes de compra de forma total o parcial. Utiliza transacciones atómicas (`@transaction.atomic`), lo que garantiza que si una línea de la recepción falla, no se ingresa ninguna al stock (todo o nada).
+*   **API REST:** Se expusieron los endpoints necesarios para que el frontend pueda consultar y registrar recepciones.
+*   **Interfaz:** Se desarrolló la pantalla `recepcion.component.ts` en Angular para que el Jefe de Almacén pueda ingresar el ID de la orden, el documento de guía y la cantidad recibida.
+
+### (Aquí irán los otros módulos cuando tus compañeros los terminen)
+*   *Módulo de Compras (Adrian)*
+*   *Módulo de Ajustes (Ashly)*
+*   *Módulo de Trazabilidad (Dresly)*
+*   *Módulo de Auditoría (Linda)*
