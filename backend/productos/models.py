@@ -26,6 +26,22 @@ class Producto(models.Model):
         verbose_name="Marca"
     )
 
+    categoria = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Categoría"
+    )
+
+    requiere_lote = models.BooleanField(
+        default=False,
+        verbose_name="Exige número de lote"
+    )
+
+    requiere_vencimiento = models.BooleanField(
+        default=False,
+        verbose_name="Exige fecha de vencimiento"
+    )
+
     unidad_medida = models.CharField(
         max_length=30,
         default="UNIDAD",
