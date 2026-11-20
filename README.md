@@ -85,3 +85,11 @@ Son credenciales solo para pruebas.
 cd backend
 python manage.py test
 ```
+
+## Detalle del módulo de recepción (Hito 3)
+
+### Módulo de Recepción de Órdenes de Compra (Patrick Carnero Lino)
+*   **Modelos:** Se crearon las tablas `Recepcion` y `DetalleRecepcion` para registrar la llegada de mercadería.
+*   **Lógica de Negocio:** El servicio `registrar_recepcion` permite recibir órdenes de compra de forma total o parcial. Utiliza transacciones atómicas (`@transaction.atomic`), lo que garantiza que si una línea de la recepción falla, no se ingresa ninguna al stock (todo o nada).
+*   **API REST:** Se expusieron los endpoints necesarios para que el frontend pueda consultar y registrar recepciones.
+*   **Interfaz:** Se desarrolló la pantalla `recepcion.component.ts` en Angular para que el Jefe de Almacén pueda ingresar el ID de la orden, el documento de guía y la cantidad recibida.
