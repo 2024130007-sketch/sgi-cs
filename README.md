@@ -16,6 +16,20 @@ Proyecto grupal de Ingeniería de Software - Universidad de Huánuco - Grupo 3 -
 2. **Movimientos de inventario y stock:** ingreso con lote y vencimiento, salida con FEFO, consulta de stock y kardex.
 Además, en proceso: transferencias entre almacenes y reglas de reposición con alertas.
 
+## Módulos del Hito 3
+Avance proyectado: 97 de 121 puntos (80,2 %). Se suman a los del Hito 2:
+
+| Módulo | Qué hace | Responsable |
+|---|---|---|
+| Órdenes de compra (`backend/compras`) | Crear y modificar órdenes, enviarlas a aprobación, aprobar o rechazar con motivo | Adrian Carlos |
+| Recepción (`backend/recepciones`) | Recibir mercadería contra una orden (total o parcial) y registrar el ingreso al stock | Patrick Carnero |
+| Ajustes y bajas (`backend/ajustes`) | Conteo físico con corrección de stock; bajas por vencimiento o daño y devolución a proveedor | Ashly Zuñiga |
+| Trazabilidad y concurrencia (`backend/inventario`) | Historial por lote, cuarentena, bloqueo optimista con reintentos | Dresly Pineda |
+| Bitácora (`backend/auditoria`) | Registro automático de quién hizo qué; consulta con filtros (solo administrador) | Linda Herrera |
+| Correo (`backend/notificaciones`) | Envío de órdenes aprobadas al proveedor y resumen de alertas al personal | Linda Herrera |
+
+Pendiente para el Hito 4: sincronización con el ERP, reportes PDF y Excel, lectura por cámara y GS1-128, modo sin conexión y copias de seguridad.
+
 ## Cómo ejecutar
 
 ### Requisitos
