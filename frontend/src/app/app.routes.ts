@@ -30,7 +30,7 @@ export const routes: Routes = [
       { path: 'aprobacion-ordenes', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] }, loadComponent: () => import('./features/compras/aprobacion.component').then((m) => m.AprobacionComponent) },
       { path: 'recepcion', canActivate: [rolGuard], data: { roles: MOVER }, loadComponent: () => import('./features/recepciones/recepcion.component').then((m) => m.RecepcionComponent) },
       { path: 'envios', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] }, loadComponent: () => import('./features/notificaciones/envios.component').then((m) => m.EnviosComponent) },
-      { path: 'bitacora', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/auditoria/bitacora.component').then((m) => m.BitacoraComponent) },
+      { path: 'auditoria', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/auditoria/auditoria.component').then((m) => m.AuditoriaComponent) },
       { path: '**', redirectTo: '' },
     ]
   }
