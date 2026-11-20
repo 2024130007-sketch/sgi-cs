@@ -26,7 +26,7 @@ interface Opcion { ruta: string; texto: string; roles?: Rol[]; grupo: string; }
 })
 export class ShellComponent {
   auth = inject(AuthService);
-  grupos = ['Inventario', 'Datos maestros', 'Reposición', 'Administración'];
+  grupos = ['Inventario', 'Compras', 'Datos maestros', 'Reposición', 'Administración'];
   
   private opciones: Opcion[] = [
     { grupo: 'Inventario', ruta: '/stock', texto: 'Consulta de stock' },
@@ -34,12 +34,20 @@ export class ShellComponent {
     { grupo: 'Inventario', ruta: '/salidas', texto: 'Registrar salida', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'OPERARIO'] },
     { grupo: 'Inventario', ruta: '/transferencias', texto: 'Transferencias', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'OPERARIO'] },
     { grupo: 'Inventario', ruta: '/kardex', texto: 'Kardex (movimientos)' },
+    { grupo: 'Inventario', ruta: '/trazabilidad', texto: 'Trazabilidad por lote' },
+    { grupo: 'Inventario', ruta: '/ajustes', texto: 'Ajuste por conteo físico', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
+    { grupo: 'Inventario', ruta: '/bajas', texto: 'Bajas y devoluciones', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
+    { grupo: 'Compras', ruta: '/ordenes-compra', texto: 'Órdenes de compra', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] },
+    { grupo: 'Compras', ruta: '/aprobacion-ordenes', texto: 'Aprobación de órdenes', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
+    { grupo: 'Compras', ruta: '/recepcion', texto: 'Recepción de órdenes', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'OPERARIO'] },
+    { grupo: 'Compras', ruta: '/envios', texto: 'Envíos por correo', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] },
     { grupo: 'Datos maestros', ruta: '/productos', texto: 'Productos' },
     { grupo: 'Datos maestros', ruta: '/almacenes', texto: 'Almacenes' },
     { grupo: 'Datos maestros', ruta: '/proveedores', texto: 'Proveedores' },
     { grupo: 'Reposición', ruta: '/reglas', texto: 'Reglas de reposición', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
     { grupo: 'Reposición', ruta: '/alertas', texto: 'Bandeja de alertas' },
     { grupo: 'Administración', ruta: '/usuarios', texto: 'Usuarios y roles', roles: ['ADMINISTRADOR'] },
+    { grupo: 'Administración', ruta: '/bitacora', texto: 'Bitácora de auditoría', roles: ['ADMINISTRADOR'] },
   ];
 
   visibles(grupo: string) {
