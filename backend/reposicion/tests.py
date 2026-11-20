@@ -5,13 +5,21 @@ from inventario.services import registrar_ingreso, registrar_salida
 from productos.models import Producto
 from usuarios.models import Usuario
 from .models import Alerta
+from django.core import mail
 
 class ReposicionTests(APITestCase):
     def setUp(self):
-        self.u = Usuario.objects.create_user("j@t.pe", "Clave1234!", rol="JEFE_ALMACEN")
+        self.u = Usuario.objects.create_user(
+            username="jefe",
+            email="jefe@sgi.test",
+            password="Clave1234!",
+            rol=Usuario.Rol.JEFE_ALMACEN,
+        )
         self.client.force_authenticate(self.u)
         self.a = Almacen.objects.create(nombre="A", direccion="x")
-        self.p = Producto.objects.create(sku="P", nombre="Prod", categoria="c")
+        self.p = Producto.objects.create(sku="P", nombre="Prod")
+        self.p.requiere_lote = False
+        self.p.requiere_vencimiento = False
         registrar_ingreso(self.u, self.a, self.p, 100)
 
     def _regla(self):
@@ -39,6 +47,57 @@ class ReposicionTests(APITestCase):
         self.assertEqual(r.data["estado"], "ATENDIDA")
 
     def test_alerta_de_vencimiento(self):
-        p2 = Producto.objects.create(sku="V", nombre="Vence", categoria="c", requiere_lote=True, requiere_vencimiento=True)
+        p2 = Producto.objects.create(sku="V", nombre="Vence")
+        p2.requiere_lote = True
+        p2.requiere_vencimiento = True
+
         registrar_ingreso(self.u, self.a, p2, 10, "L1", date.today() + timedelta(days=20))
+
         self.assertEqual(self.client.post("/api/alertas/generar/").data["nuevas"], 1)
+
+    def test_enviar_resumen_a_personal_autorizado(self):
+        Usuario.objects.create_user(
+            username="admin",
+            email="admin@sgi.test",
+            password="Clave1234!",
+            rol=Usuario.Rol.ADMINISTRADOR,
+        )
+        Usuario.objects.create_user(
+            username="comprador",
+            email="comprador@sgi.test",
+            password="Clave1234!",
+            rol=Usuario.Rol.COMPRADOR,
+        )
+
+        Alerta.objects.create(
+            tipo=Alerta.Tipo.REPOSICION,
+            producto=self.p,
+            almacen=self.a,
+            mensaje="Stock bajo",
+        )
+
+        respuesta = self.client.post("/api/alertas/enviar_resumen/")
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta.data["enviados"], 3)
+        self.assertEqual(len(mail.outbox), 3)
+
+    def test_no_enviar_resumen_si_no_hay_alertas(self):
+        respuesta = self.client.post("/api/alertas/enviar_resumen/")
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta.data["enviados"], 0)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_operario_no_puede_enviar_resumen(self):
+        operario = Usuario.objects.create_user(
+            username="operario",
+            email="operario@sgi.test",
+            password="Clave1234!",
+            rol=Usuario.Rol.OPERARIO,
+        )
+        self.client.force_authenticate(operario)
+
+        respuesta = self.client.post("/api/alertas/enviar_resumen/")
+
+        self.assertEqual(respuesta.status_code, 403)

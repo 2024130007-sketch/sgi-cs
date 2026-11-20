@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from config.permisos import roles_permitidos
 from usuarios.models import Usuario
 from . import services
+from . import notificaciones
 from .models import Alerta, ReglaReposicion
 from .serializers import AlertaSerializer, ReglaSerializer
 
@@ -47,3 +48,13 @@ class AlertaViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"], permission_classes=[roles_permitidos(R.ADMINISTRADOR, R.JEFE_ALMACEN, R.COMPRADOR)])
     def descartar(self, request, pk=None):
         return self._cerrar(request, pk, Alerta.Estado.DESCARTADA)
+    @action(
+        detail=False,
+        methods=["post"],
+        permission_classes=[
+            roles_permitidos(R.ADMINISTRADOR, R.JEFE_ALMACEN, R.COMPRADOR)
+        ],
+    )
+    def enviar_resumen(self, request):
+        resultado = notificaciones.enviar_resumen_alertas()
+        return Response(resultado)
