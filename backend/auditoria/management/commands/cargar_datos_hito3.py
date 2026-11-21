@@ -9,7 +9,8 @@ from proveedores.models import Proveedor
 from usuarios.models import Usuario
 from inventario.models import Lote, Existencia, Movimiento, DetalleMovimiento
 from reposicion.models import ReglaReposicion, Alerta
-
+from compras import services as compras_services
+from compras.models import OrdenCompra
 
 class Command(BaseCommand):
     help = "Carga datos de prueba para el Hito 3 del SGI"
@@ -31,6 +32,19 @@ class Command(BaseCommand):
         if creado:
             usuario.set_password("AdminHito3_2026")
             usuario.save()
+
+        comprador, _ = Usuario.objects.get_or_create(
+            email="comprador.hito3@sgi.test",
+            defaults={
+                "username": "comprador.hito3@sgi.test",
+                "first_name": "Comprador Hito 3",
+                "rol": Usuario.Rol.COMPRADOR,
+                "is_active": True,
+            },
+        )
+        if _:
+            comprador.set_password("CompradorHito3_2026")
+            comprador.save()
 
         # 2. Almacenes
         almacen, _ = Almacen.objects.get_or_create(
@@ -193,3 +207,66 @@ class Command(BaseCommand):
         self.stdout.write(f"Movimientos: {Movimiento.objects.count()}")
         self.stdout.write(f"Alertas: {Alerta.objects.count()}")
         self.stdout.write(f"Reglas de reposicion: {ReglaReposicion.objects.count()}")
+
+        # 10. Orden de compra en borrador
+        orden_borrador = OrdenCompra.objects.filter(
+            observacion="OC de prueba Hito 3 - Borrador"
+        ).first()
+
+        if not orden_borrador:
+            orden_borrador = compras_services.crear_orden(
+                comprador,
+                proveedor,
+                almacen,
+                [
+                    {
+                        "producto": producto1,
+                        "cantidad": 10,
+                        "precio_unitario": "50.00",
+                    }
+                ],
+                "OC de prueba Hito 3 - Borrador",
+            )
+
+        # 11. Orden de compra pendiente
+        orden_pendiente = OrdenCompra.objects.filter(
+            observacion="OC de prueba Hito 3 - Pendiente"
+        ).first()
+
+        if not orden_pendiente:
+            orden_pendiente = compras_services.crear_orden(
+                comprador,
+                proveedor,
+                almacen,
+                [
+                    {
+                        "producto": producto2,
+                        "cantidad": 15,
+                        "precio_unitario": "25.00",
+                    }
+                ],
+                "OC de prueba Hito 3 - Pendiente",
+            )
+            compras_services.enviar_a_aprobacion(orden_pendiente)
+
+        # 12. Orden de compra aprobada
+        orden_aprobada = OrdenCompra.objects.filter(
+            observacion="OC de prueba Hito 3 - Aprobada"
+        ).first()
+
+        if not orden_aprobada:
+            orden_aprobada = compras_services.crear_orden(
+                comprador,
+                proveedor,
+                almacen,
+                [
+                    {
+                        "producto": producto1,
+                        "cantidad": 20,
+                        "precio_unitario": "50.00",
+                    }
+                ],
+                "OC de prueba Hito 3 - Aprobada",
+            )
+            compras_services.enviar_a_aprobacion(orden_aprobada)
+            compras_services.aprobar(usuario, orden_aprobada)
