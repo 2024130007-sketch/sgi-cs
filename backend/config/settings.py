@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "recepciones",
     "auditoria",
     "notificaciones",
+    "erp",
 ]
 
 MIDDLEWARE = [
