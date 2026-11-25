@@ -1,14 +1,21 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService, mensajeError } from '../../core/api.service';
+import { EscanerComponent, ResultadoEscaneo } from './escaner.component';
 
 /** Vista RegistroSalida (CU-05, RF-16/17/19): descuenta lotes por FEFO. */
 @Component({
   selector: 'app-salida',
-  imports: [FormsModule],
+  imports: [FormsModule, EscanerComponent],
   template: `
     <h1>Registrar salida de mercadería (FEFO)</h1>
     @if (error) { <div class="error">{{ error }}</div> }
+
+    @if (aviso) { <div class="ok">{{ aviso }}</div> }
+
+    <div class="tarjeta">
+      <app-escaner (escaneado)="usarEscaneo($event)" />
+    </div>
 
     <div class="tarjeta">
       <form (ngSubmit)="registrar()" class="fila">
@@ -50,6 +57,16 @@ export class SalidaComponent implements OnInit {
   form: any = { almacen: null, producto: null, cantidad: 1, documento: '' };
   resultado: any = null;
   error = '';
+  aviso = '';
+
+  /** Selecciona el producto leído. El lote de salida lo sigue asignando FEFO. */
+  usarEscaneo(r: ResultadoEscaneo) {
+    this.error = '';
+    this.form.producto = r.producto.id;
+    this.aviso = r.lote
+      ? `Producto seleccionado. Lote leído: ${r.lote}; el sistema asignará los lotes por FEFO.`
+      : 'Producto seleccionado.';
+  }
 
   ngOnInit() {
     this.api.get<any[]>('almacenes/').subscribe((d) => (this.almacenes = d.filter((a) => a.activo)));
@@ -59,6 +76,7 @@ export class SalidaComponent implements OnInit {
   registrar() {
     this.error = '';
     this.resultado = null;
+    this.aviso = '';
     const f = this.form;
     if (!f.almacen || !f.producto) { this.error = 'Seleccione el almacén y el producto.'; return; }
     if (!f.cantidad || f.cantidad <= 0) { this.error = 'La cantidad debe ser mayor a cero.'; return; }
