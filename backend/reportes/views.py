@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from inventario.models import Existencia
+from compras.models import OrdenCompra
+from inventario.models import Existencia, Movimiento
 from . import services
 
 
@@ -42,3 +43,51 @@ class ReporteStockView(APIView):
         cols = ["SKU", "Producto", "Lote", "Almacén", "Físico", "Reservado", "Disponible"]
         formato = request.query_params.get("formato", "pdf").lower()
         return _respuesta_archivo(formato, "stock", "Stock actual", cols, filas)
+
+
+class ReporteKardexView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = Movimiento.objects.select_related("almacen", "usuario").order_by("-fecha", "-id")
+        almacen_id = request.query_params.get("almacen")
+        if almacen_id:
+            qs = qs.filter(almacen_id=almacen_id)
+        filas = [
+            (
+                m.id,
+                m.fecha.strftime("%Y-%m-%d %H:%M") if m.fecha else "",
+                m.get_tipo_display() if hasattr(m, "get_tipo_display") else m.tipo,
+                m.almacen.nombre if m.almacen else "",
+                m.documento or "-",
+                m.usuario.email if m.usuario else "Sistema",
+            )
+            for m in qs[:200]
+        ]
+        cols = ["ID", "Fecha", "Tipo", "Almacén", "Documento", "Usuario"]
+        formato = request.query_params.get("formato", "pdf").lower()
+        return _respuesta_archivo(formato, "kardex", "Kardex de movimientos", cols, filas)
+
+
+class ReporteOrdenesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = OrdenCompra.objects.select_related("proveedor", "almacen_destino").order_by("-fecha", "-id")
+        estado = request.query_params.get("estado")
+        if estado:
+            qs = qs.filter(estado=estado)
+        filas = [
+            (
+                f"OC-{o.id}",
+                o.proveedor.razon_social,
+                o.almacen_destino.nombre,
+                o.get_estado_display(),
+                o.fecha.strftime("%Y-%m-%d") if o.fecha else "",
+                o.observacion or "-",
+            )
+            for o in qs
+        ]
+        cols = ["N.º Orden", "Proveedor", "Almacén Destino", "Estado", "Fecha", "Observación"]
+        formato = request.query_params.get("formato", "pdf").lower()
+        return _respuesta_archivo(formato, "ordenes_compra", "Órdenes de compra", cols, filas)
