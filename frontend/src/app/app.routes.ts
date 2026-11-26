@@ -32,6 +32,7 @@ export const routes: Routes = [
       { path: 'envios', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] }, loadComponent: () => import('./features/notificaciones/envios.component').then((m) => m.EnviosComponent) },
       { path: 'auditoria', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/auditoria/auditoria.component').then((m) => m.AuditoriaComponent) },
       { path: '**', redirectTo: '' },
+      { path: 'erp', loadComponent: () => import('./features/erp/erp.component').then((m) => m.ErpComponent) },
     ]
   }
 ];
