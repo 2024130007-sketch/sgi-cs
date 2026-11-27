@@ -1,8 +1,7 @@
-
-import sqlite3
 from pathlib import Path
 
 from django.conf import settings
+from django.db import connection
 from django.utils import timezone
 
 from respaldos.models import RegistroRespaldo
@@ -10,13 +9,14 @@ from respaldos.models import RegistroRespaldo
 
 MAX_RESPALDOS = 7
 
+def obtener_contenido_bd():
+    connection.ensure_connection()
+    return connection.connection.serialize()
 
 def crear_respaldo(usuario=None):
     """Genera una copia consistente de SQLite y conserva los últimos 7."""
-    base_datos = Path(settings.DATABASES["default"]["NAME"])
-
-    if not base_datos.exists():
-        raise FileNotFoundError("No se encontró la base de datos SQLite.")
+    if connection.vendor != "sqlite":
+        raise RuntimeError("El sistema de respaldos requiere SQLite.")
 
     carpeta = Path(settings.BASE_DIR) / "respaldos_bd"
     carpeta.mkdir(parents=True, exist_ok=True)
@@ -31,16 +31,13 @@ def crear_respaldo(usuario=None):
     )
 
     try:
-        with sqlite3.connect(str(base_datos)) as origen:
-            with sqlite3.connect(str(destino)) as copia:
-                origen.backup(copia)
+        contenido = obtener_contenido_bd()
+        destino.write_bytes(contenido)
 
         registro.tamano = destino.stat().st_size
         registro.ok = True
         registro.error = ""
         registro.save(update_fields=["tamano", "ok", "error"])
-
-        rotar_respaldos()
 
     except Exception as exc:
         registro.error = str(exc)
@@ -52,6 +49,7 @@ def crear_respaldo(usuario=None):
 
         raise
 
+    rotar_respaldos()
     return registro
 
 
