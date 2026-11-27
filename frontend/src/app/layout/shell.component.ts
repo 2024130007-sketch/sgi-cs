@@ -48,6 +48,7 @@ export class ShellComponent {
     { grupo: 'Reposición', ruta: '/alertas', texto: 'Bandeja de alertas' },
     { grupo: 'Administración', ruta: '/usuarios', texto: 'Usuarios y roles', roles: ['ADMINISTRADOR'] },
     { grupo: 'Administración', ruta: '/auditoria', texto: 'Bitácora de auditoría', roles: ['ADMINISTRADOR'] },
+    { grupo: 'Administración', ruta: '/respaldos', texto: 'Respaldos de base de datos', roles: ['ADMINISTRADOR'] },
   ];
 
   visibles(grupo: string) {
