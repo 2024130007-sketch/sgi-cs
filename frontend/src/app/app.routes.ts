@@ -31,6 +31,7 @@ export const routes: Routes = [
       { path: 'recepcion', canActivate: [rolGuard], data: { roles: MOVER }, loadComponent: () => import('./features/recepciones/recepcion.component').then((m) => m.RecepcionComponent) },
       { path: 'envios', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] }, loadComponent: () => import('./features/notificaciones/envios.component').then((m) => m.EnviosComponent) },
       { path: 'auditoria', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/auditoria/auditoria.component').then((m) => m.AuditoriaComponent) },
+      { path: 'respaldos', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/respaldos/respaldos.component').then((m) => m.RespaldosComponent) },
       { path: '**', redirectTo: '' },
     ]
   }
