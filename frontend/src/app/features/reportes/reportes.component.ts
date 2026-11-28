@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../core/api.service';
+import { API_URL } from '../../core/config';
 
 /** Pantalla de reportes (#31): descarga de stock, kardex y órdenes en PDF o Excel. */
 @Component({
@@ -44,7 +45,7 @@ import { ApiService } from '../../core/api.service';
 export class ReportesComponent implements OnInit {
   private http = inject(HttpClient);
   private api = inject(ApiService);
-  private base = '/api'; // cámbiala por la URL base que use api.service.ts
+  private base = API_URL; // cámbiala por la URL base que use api.service.ts
   almacenes: any[] = [];
   almacen: number | null = null;
   estado = '';
