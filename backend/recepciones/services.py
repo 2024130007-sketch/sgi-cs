@@ -49,4 +49,14 @@ def registrar_recepcion(usuario, orden_compra, detalles, documento=""):
     recepcion.save(update_fields=["estado"])
     orden_compra.estado = E.RECIBIDA if completa else E.RECIBIDA_PARCIAL
     orden_compra.save(update_fields=["estado"])
+
+        # --- NUEVO: Encolar al ERP ---
+    from erp.services import encolar
+    payload = {
+        "orden_id": orden_compra.id,
+        "lineas": [{"sku": d.detalle_orden.producto.sku, "cantidad": d.cantidad} for d in recepcion.detalles.all()]
+    }
+    encolar("RECEPCION", payload)
+    # -----------------------------
+
     return recepcion

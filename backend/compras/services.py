@@ -88,6 +88,15 @@ def aprobar(usuario, orden):
     orden.aprobada_por = usuario
     orden.fecha_aprobacion = timezone.now()
     orden.save(update_fields=["estado", "aprobada_por", "fecha_aprobacion"])
+        # --- NUEVO: Encolar al ERP ---
+    from erp.services import encolar
+    payload = {
+        "orden_id": orden.id,
+        "proveedor": orden.proveedor.razon_social,
+        "lineas": [{"sku": d.producto.sku, "cantidad": d.cantidad} for d in orden.detalles.all()]
+    }
+    encolar("ORDEN_APROBADA", payload)
+    # -----------------------------
     return orden
 
 
