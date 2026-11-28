@@ -49,6 +49,7 @@ export class ShellComponent {
     { grupo: 'Reposición', ruta: '/alertas', texto: 'Bandeja de alertas' },
     { grupo: 'Administración', ruta: '/usuarios', texto: 'Usuarios y roles', roles: ['ADMINISTRADOR'] },
     { grupo: 'Administración', ruta: '/auditoria', texto: 'Bitácora de auditoría', roles: ['ADMINISTRADOR'] },
+    { grupo: 'Administración', ruta: '/erp', texto: 'Sincronización con el ERP', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
     { grupo: 'Administración', ruta: '/respaldos', texto: 'Respaldos de base de datos', roles: ['ADMINISTRADOR'] },
   ];
 

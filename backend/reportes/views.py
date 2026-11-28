@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -56,10 +57,10 @@ class ReporteKardexView(APIView):
         filas = [
             (
                 m.id,
-                m.fecha.strftime("%Y-%m-%d %H:%M") if m.fecha else "",
+                timezone.localtime(m.fecha).strftime("%Y-%m-%d %H:%M"),
                 m.get_tipo_display() if hasattr(m, "get_tipo_display") else m.tipo,
                 m.almacen.nombre if m.almacen else "",
-                m.documento or "-",
+                m.documento_origen or "-",
                 m.usuario.email if m.usuario else "Sistema",
             )
             for m in qs[:200]
@@ -83,7 +84,7 @@ class ReporteOrdenesView(APIView):
                 o.proveedor.razon_social,
                 o.almacen_destino.nombre,
                 o.get_estado_display(),
-                o.fecha.strftime("%Y-%m-%d") if o.fecha else "",
+                timezone.localtime(o.fecha).strftime("%Y-%m-%d"),
                 o.observacion or "-",
             )
             for o in qs

@@ -1,6 +1,8 @@
 from io import BytesIO
 from openpyxl import load_workbook
 from rest_framework.test import APITestCase
+from almacenes.models import Almacen
+from inventario.models import Movimiento
 from usuarios.models import Usuario
 
 
@@ -43,3 +45,13 @@ class ReportesTests(APITestCase):
         self.client.force_authenticate(None)
         r = self.client.get("/api/reportes/stock/")
         self.assertEqual(r.status_code, 401)
+
+    def test_kardex_con_movimientos_incluye_el_documento(self):
+        almacen = Almacen.objects.create(nombre="Central")
+        Movimiento.objects.create(tipo=Movimiento.Tipo.INGRESO, almacen=almacen,
+                                  usuario=self.user, documento_origen="GR-001")
+        for formato in ("pdf", "xlsx"):
+            r = self.client.get(f"/api/reportes/kardex/?formato={formato}")
+            self.assertEqual(r.status_code, 200)
+        wb = load_workbook(BytesIO(r.content))
+        self.assertEqual(wb.active.cell(2, 5).value, "GR-001")

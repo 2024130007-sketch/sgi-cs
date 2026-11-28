@@ -30,6 +30,7 @@ class ErpTests(APITestCase):
         item = ColaERP.objects.first()
         # Forzamos 5 intentos
         for _ in range(5):
+            item.refresh_from_db()  # conserva los intentos ya registrados
             item.proximo_intento = timezone.now() - timezone.timedelta(minutes=1)
             item.save()
             services.procesar_pendientes()
