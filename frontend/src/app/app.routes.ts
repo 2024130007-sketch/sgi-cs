@@ -34,6 +34,7 @@ export const routes: Routes = [
       { path: 'respaldos', canActivate: [rolGuard], data: { roles: ['ADMINISTRADOR'] }, loadComponent: () => import('./features/respaldos/respaldos.component').then((m) => m.RespaldosComponent) },
       { path: 'reportes', loadComponent: () => import('./features/reportes/reportes.component').then((m) => m.ReportesComponent) },
       { path: '**', redirectTo: '' },
+      { path: 'erp', loadComponent: () => import('./features/erp/erp.component').then((m) => m.ErpComponent) },
     ]
   }
 ];

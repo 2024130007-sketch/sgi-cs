@@ -10,6 +10,6 @@ if "usuarios" in settings.INSTALLED_APPS:
     ]
 # Cada app expone sus rutas bajo /api/
 for _app in ["productos", "almacenes", "proveedores", "inventario", "transferencias", "reposicion",
-             "ajustes", "compras", "recepciones", "auditoria", "notificaciones", "respaldos", "reportes"]:
+             "ajustes", "compras", "recepciones", "auditoria", "notificaciones", "respaldos", "reportes", "erp"]:
     if _app in settings.INSTALLED_APPS:
         urlpatterns.append(path("api/", include(f"{_app}.urls")))
