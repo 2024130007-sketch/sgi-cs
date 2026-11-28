@@ -37,6 +37,7 @@ export class ShellComponent {
     { grupo: 'Inventario', ruta: '/trazabilidad', texto: 'Trazabilidad por lote' },
     { grupo: 'Inventario', ruta: '/ajustes', texto: 'Ajuste por conteo físico', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
     { grupo: 'Inventario', ruta: '/bajas', texto: 'Bajas y devoluciones', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
+    { grupo: 'Inventario', ruta: '/reportes', texto: 'Reportes (PDF y Excel)' },
     { grupo: 'Compras', ruta: '/ordenes-compra', texto: 'Órdenes de compra', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'COMPRADOR'] },
     { grupo: 'Compras', ruta: '/aprobacion-ordenes', texto: 'Aprobación de órdenes', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN'] },
     { grupo: 'Compras', ruta: '/recepcion', texto: 'Recepción de órdenes', roles: ['ADMINISTRADOR', 'JEFE_ALMACEN', 'OPERARIO'] },
