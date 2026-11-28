@@ -1,22 +1,24 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService, mensajeError } from '../../core/api.service';
+import { EscanerComponent, ResultadoEscaneo } from './escaner.component';
 
 /** Vista RegistroIngreso (CU-04, RF-14/15/31). Incluye lectura de código de barras en modo teclado (CU-17). */
 @Component({
   selector: 'app-ingreso',
-  imports: [FormsModule],
+  imports: [FormsModule, EscanerComponent],
   template: `
     <h1>Registrar ingreso de mercadería</h1>
     @if (error) { <div class="error">{{ error }}</div> }
     @if (ok) { <div class="ok">{{ ok }}</div> }
 
     <div class="tarjeta">
+      <app-escaner (escaneado)="usarEscaneo($event)" />
+    </div>
+
+    <div class="tarjeta">
       <form (ngSubmit)="registrar()">
         <div class="fila">
-          <label>Escanear código de barras
-            <input name="cb" [(ngModel)]="codigo" (keydown.enter)="$event.preventDefault(); buscarCodigo()" placeholder="Escanee y presione Enter" />
-          </label>
           <label>Almacén
             <select name="almacen" [(ngModel)]="form.almacen">
               <option [ngValue]="null">Seleccione...</option>
@@ -52,7 +54,6 @@ export class IngresoComponent implements OnInit {
   almacenes: any[] = [];
   productos: any[] = [];
   proveedores: any[] = [];
-  codigo = '';
   form: any = this.vacio();
   error = '';
   ok = '';
@@ -65,13 +66,12 @@ export class IngresoComponent implements OnInit {
     this.api.get<any[]>('proveedores/').subscribe((d) => (this.proveedores = d.filter((p) => p.activo)));
   }
 
-  buscarCodigo() {
-    this.error = '';
-    if (!this.codigo.trim()) return;
-    this.api.get<any>(`productos/codigo/${encodeURIComponent(this.codigo.trim())}/`).subscribe({
-      next: (p) => { this.form.producto = p.id; this.codigo = ''; },
-      error: (e) => (this.error = mensajeError(e)),
-    });
+  /** Rellena el formulario con lo leído; no borra lo que el código no trae. */
+  usarEscaneo(r: ResultadoEscaneo) {
+    this.error = this.ok = '';
+    this.form.producto = r.producto.id;
+    if (r.lote) this.form.numero_lote = r.lote;
+    if (r.vencimiento) this.form.fecha_vencimiento = r.vencimiento;
   }
 
   registrar() {
